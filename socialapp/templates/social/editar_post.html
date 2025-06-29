@@ -1,0 +1,64 @@
+{% extends 'social/base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-6">
+        <p><strong>Autor:</strong> {{ post.autor_postagem }}</p>
+        <label for="titulo">Título:
+          {% render_field form.titulo_postagem type="text" required="required" name="titulo" %}
+        </label>
+      </div>
+      <div class="col-6">
+        <label for="conteudo">Conteúdo:
+          {% render_field form.conteudo_postagem type="text" required="required" name="conteudo" %}
+        </label>
+        <label for="avalia">Avaliação:
+          {% render_field form.id_avalia type="text" required="required" name="avalia" %}
+        </label>
+      </div>
+      <div>
+        <input type="submit" value="Salvar" class="btn btn-primary">
+      </div>
+    </div>
+  </form>
+
+  <div>
+    <h1>Editar Postagem</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Autor</th>
+          <th>Data</th>
+          <th>Título</th>
+          <th>Conteúdo</th>
+          <th>Editar</th>
+          <th>Excluir</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+          <tr>
+            <td>{{ post.id_postagem }}</td>
+            <td>{{ post.autor_postagem }}</td>
+            <td>{{ post.data_postagem }}</td>
+            <td>{{ post.titulo_postagem }}</td>
+            <td>{{ post.conteudo_postagem }}</td>
+            <td>
+              <a href="{% url 'editar_post' post.id_postagem %}">
+                <svg ...> <!-- seu ícone SVG aqui --> </svg>
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'deleta_post' post.id_postagem %}">
+                <svg ...> <!-- seu ícone SVG aqui --> </svg>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}

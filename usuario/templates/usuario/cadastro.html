@@ -1,0 +1,19 @@
+{% extends 'social/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h3>Cadastro de Usuário</h3>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Criar" class="btn btn-success">
+    </form>
+  </div>
+{% endblock content %}

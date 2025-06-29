@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Study Class - Feed</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}"/>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet"/>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+  <div class="container px-4 px-lg-5">
+    <a class="navbar-brand" href="{% url 'index' %}">Study Class</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+      Menu <i class="fas fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ms-auto py-4 py-lg-0">
+        <li class="nav-item">
+          <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'sobre' %}">Sobre</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'postar' %}">Postar</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link nav-link px-lg-3 py-3 py-lg-4" style="text-decoration: none; padding: 0;">Logout</button>
+          </form>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'conecte_se' %}">Conecte-se</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header class="masthead" style="background-image: url('{% static 'assets/img/home-bg.jpg' %}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>Study Class</h1>
+                    <span class="subheading">Compartilhando conhecimento com o mundo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            {% for postagem in postagens %}
+                <div class="card my-4 p-3">
+                    <h2 class="card-title">{{ postagem.titulo_postagem }}</h2>
+                    <p class="card-text">{{ postagem.conteudo_postagem }}</p>
+                    <p class="text-muted small">Postado por <strong>{{ postagem.autor_postagem }}</strong> em {{ postagem.data_postagem }}</p>
+
+                    <!-- Botão Curtir -->
+                    {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'curtir_post' postagem.id_postagem %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            ❤️ Curtir ({{ postagem.curtidas.count }})
+                        </button>
+                    </form>
+                    {% else %}
+                        <p class="text-muted">Entre para curtir esta postagem.</p>
+                    {% endif %}
+
+                    <!-- Comentários -->
+                    <h6 class="mt-3">Comentários:</h6>
+                    <ul class="list-group">
+                        {% for comentario in postagem.comentarios.all %}
+                            <li class="list-group-item">
+                                <strong>{{ comentario.autor.username }}:</strong> {{ comentario.texto }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">Nenhum comentário ainda.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Formulário de Comentário -->
+                    {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'comentar_post' postagem.id_postagem %}" class="mt-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="texto" class="form-control" placeholder="Digite um comentário..." required>
+                            <button type="submit" class="btn btn-primary">Comentar</button>
+                        </div>
+                    </form>
+                    {% else %}
+                        <p class="text-muted mt-2">Entre para comentar esta postagem.</p>
+                    {% endif %}
+
+                    <!-- Botões Editar e Excluir -->
+                    {% if user == postagem.autor_postagem %}
+                      <div class="mt-3 text-end">
+                        <a href="{% url 'editar_post' postagem.id_postagem %}" class="btn btn-sm btn-warning me-2">✏️ Editar</a>
+                        <a href="{% url 'deleta_post' postagem.id_postagem %}" class="btn btn-sm btn-danger">🗑️ Excluir</a>
+                      </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="border-top">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7 text-center">
+                <p class="small text-muted fst-italic mb-0">Copyright &copy; Study Class {{ now|date:"Y" }}</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

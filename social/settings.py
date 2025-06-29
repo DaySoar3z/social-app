@@ -134,5 +134,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL ='conecte_se'
 LOGIN_REDIRECT_URL='index'
 LOGOUT_REDIRECT_URL='conecte_se'
-
+CSRF_TRUSTED_ORIGINS = ['https://social-app-production-8b81.up.railway.app']
 
